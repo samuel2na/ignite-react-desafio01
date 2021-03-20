@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import '../styles/tasklist.scss'
 
@@ -13,23 +13,59 @@ interface Task {
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  //const [ctTask , setCtTask] = useState(0);
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+
+    if(!newTaskTitle) return ;
+    const filterTask = tasks.filter(task => task.title == newTaskTitle);
+    console.log(filterTask);
+    if(filterTask.length > 0) return alert("Essa task ja foi cadastrada!");
+
+    const id = Math.random();
+
+    const task = {
+      id, title:newTaskTitle, isComplete:false
+    }
+    setTasks([...tasks, task]);
+    setNewTaskTitle('');
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    
+    const nTasks = tasks.map(task => task.id == id ? {
+      ...task,
+      isComplete: !task.isComplete
+    } : task);
+
+    setTasks(nTasks);
+
+    /*tasks.map((task) => {
+      if(task.id == id) { 
+        task.isComplete = !task.isComplete;
+        setCtTask(ctTask + 1); 
+      }
+    });*/
+
   }
+
+  //useEffect(() => {}, [ctTask]);
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    
+    const filterTasks = tasks.filter(task => task.id != id);
+    setTasks(filterTasks);
+
   }
+
 
   return (
     <section className="task-list container">
       <header>
-        <h2>Minhas tasks</h2>
+        <h2>My tasks</h2>
 
         <div className="input-group">
           <input 
